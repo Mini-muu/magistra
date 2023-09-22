@@ -1,0 +1,73 @@
+version: '3'
+
+services:
+  database:
+    image: postgres:latest
+    container_name: database
+    restart: always
+    environment:
+      POTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: magistra
+    volumes:
+      - ./database/init:/docker-entrypoint-initdb.d
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+  
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    depends_on:
+      - database
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - backend-network
+    ports:
+      - '8888:80'
+    
+  api:
+    image: python:3.10
+    container_name: api
+    restart: always
+    depends_on:
+      - database
+    volumes:
+      - ./api/app:/app/
+    command: bash -c "cd app && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 80"
+    networks:
+      - backend-network
+      - frontend-network
+    healthcheck:
+      test: curl --fail http://api/test || exit 1 
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+  
+  frontend:
+    image: node:20-alpine3.17
+    container_name: frontend
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - ./frontend/app:/app/
+    command: /bin/sh -c "cd app && npm install && npm run dev" # <-- only while in development
+    networks:
+      - frontend-network
+    ports:
+      - 7525:3000
+
+volumes:
+  database-data:
+  pgadmin-data:
+
+networks:
+  backend-network:
+  frontend-network:

@@ -1,14 +1,17 @@
-import HomeHeader from "@/components/HomeHeader"
+import { HomeHeader } from "@/components/Headers"
 import { Section, SectionFirst } from "@/components/Section"
 
 export default function Home() {
   return (
     <>
     <HomeHeader />
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-    <Section className={'flex items-cent '} >
-      <h1>test</h1>
-    </Section>
+    <main className="flex min-h-screen flex-col items-center justify-center">
+      <Section className={'flex items-cent '} >
+        <h1>Section 1</h1>
+      </Section>
+      <Section className={'flex items-cent'} >
+        <h1>Section 2</h1>
+      </Section>
     </main>
     </>
   )
