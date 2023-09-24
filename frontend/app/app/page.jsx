@@ -1,5 +1,5 @@
 import { HomeHeader } from "@/components/Headers"
-import { Section, SectionFirst } from "@/components/Section"
+import { Section } from "@/components/Section"
 
 export default function Home() {
   return (
