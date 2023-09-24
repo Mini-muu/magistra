@@ -6,13 +6,27 @@ import { X } from "lucide-react";
 
 export function LoginForm({ children }) {
     const [showPassword, setShowPassword] = useState(false)
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+
+    const handleEmail = (e) => {
+        setEmail(e.target.value)
+    }
+
+    const handlePassword = (e) => {
+        setPassword(e.target.value)
+    }
 
     const setPasswordVisibility = () => {
         setShowPassword(!showPassword)
     }
 
+    const handleSubmit = (e) => {
+        e.preventDefault()
+    }
+
     return (
-        <div className="w-5/6 h-1/2 bg-black rounded-lg flex flex-col my-outline max-w-sm items-center justify-center gap-5 relative">
+        <form onSubmit={handleSubmit} className="w-5/6 h-1/2 bg-black rounded-lg flex flex-col my-outline max-w-sm items-center justify-center gap-5 relative">
             {
                 children
             }
@@ -26,7 +40,7 @@ export function LoginForm({ children }) {
                         </svg>
                     </span>
 
-                    <input type="email" placeholder="john@example.com" class="block w-full py-2.5 placeholder-gray-400/70 border rounded-lg pl-11 pr-5 rtl:pr-11 rtl:pl-5 bg-gray-900 text-gray-300 border-gray-600 focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+                    <input onChange={handleEmail} type="email" placeholder="john@example.com" class="block w-full py-2.5 placeholder-gray-400/70 border rounded-lg pl-11 pr-5 rtl:pr-11 rtl:pl-5 bg-gray-900 text-gray-300 border-gray-600 focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
                 </div>
             </div>
             
@@ -45,7 +59,7 @@ export function LoginForm({ children }) {
                         </svg>
                     </button>
 
-                    <input type={showPassword ? "text" : "password"} placeholder="********" className="block w-full py-2.5 placeholder-gray-400/70 border rounded-lg pl-5 pr-11 rtl:pr-5 rtl:pl-11 bg-gray-900 text-gray-300 border-gray-600 focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+                    <input onChange={handlePassword} type={showPassword ? "text" : "password"} placeholder="********" className="block w-full py-2.5 placeholder-gray-400/70 border rounded-lg pl-5 pr-11 rtl:pr-5 rtl:pl-11 bg-gray-900 text-gray-300 border-gray-600 focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
                 </div>
             </div>
 
@@ -53,13 +67,13 @@ export function LoginForm({ children }) {
             <ButtonPrimary>
                 Login
             </ButtonPrimary>
-        </div>
+        </form>
     )
 }
 
 export function LoginFormAllPage({ onExitClick }) {
     return (
-        <div className="flex items-center justify-center fixed top-0 w-full h-full backdrop-blur">
+        <div className="flex items-center justify-center fixed top-0 w-full h-full backdrop-blur-sm">
             <LoginForm>
                 <X onClick={onExitClick} className="absolute top-5 left-5"/>
             </LoginForm>
