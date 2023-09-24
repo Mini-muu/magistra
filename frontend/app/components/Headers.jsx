@@ -5,12 +5,18 @@ import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
 import { useState } from "react";
 import { LoginFormAllPage } from "./LoginForm";
+import { SignupFormAllPage } from "./SignupForm";
 
 export function HomeHeader() {
   const [showLoginForm, setShowLoginForm] = useState(false)
-
+  const [showSignupForm, setShowSignupForm] = useState(false)
+  
   const showLogin = () => {
     setShowLoginForm(!showLoginForm)
+  }
+
+  const showSignup = () => {
+    setShowSignupForm(!showSignupForm)
   }
 
     return (
@@ -23,7 +29,7 @@ export function HomeHeader() {
           <ButtonPrimary onButtonClick={showLogin}>
             Login
           </ButtonPrimary>
-          <ButtonSecondary>
+          <ButtonSecondary onButtonClick={showSignup}>
             Sign Up
           </ButtonSecondary>
         </div>
@@ -31,6 +37,13 @@ export function HomeHeader() {
       {
         showLoginForm ?
         <LoginFormAllPage onExitClick={showLogin}/>
+        :
+        null
+      }
+      <></>
+      {
+        showSignupForm ?
+        <SignupFormAllPage onExitClick={showSignup}/>
         :
         null
       }
