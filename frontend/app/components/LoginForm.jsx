@@ -1,13 +1,15 @@
 "use client";
 
 import { ButtonPrimary } from "./Buttons"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { X } from "lucide-react";
+import { EmailInput } from "./Inputs";
 
 export function LoginForm({ children }) {
     const [showPassword, setShowPassword] = useState(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [submitDisabled, setSubmitDisabled] = useState(true)
 
     const handleEmail = (e) => {
         setEmail(e.target.value)
@@ -25,24 +27,18 @@ export function LoginForm({ children }) {
         e.preventDefault()
     }
 
+    useEffect(() => {
+        email !== '' && password !== '' ? setSubmitDisabled(false) : setSubmitDisabled(true)
+    }, [email, password])
+
     return (
         <form onSubmit={handleSubmit} className="w-5/6 h-1/2 bg-black rounded-lg flex flex-col my-outline max-w-sm items-center justify-center gap-5 relative">
             {
                 children
             }
-            <div>
-                <label for="email" class="block text-sm text-gray-300">Email Address</label>
-
-                <div class="relative flex items-center mt-2">
-                    <span class="absolute">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mx-3 text-gray-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                        </svg>
-                    </span>
-
-                    <input onChange={handleEmail} type="email" placeholder="john@example.com" class="block w-full py-2.5 placeholder-gray-400/70 border rounded-lg pl-11 pr-5 rtl:pr-11 rtl:pl-5 bg-gray-900 text-gray-300 border-gray-600 focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
-                </div>
-            </div>
+            <EmailInput
+            onInputChange={handleEmail}
+            />
             
             
             <div>
@@ -64,7 +60,7 @@ export function LoginForm({ children }) {
             </div>
 
             <div className="h-1"></div>
-            <ButtonPrimary>
+            <ButtonPrimary disabled={ submitDisabled }>
                 Login
             </ButtonPrimary>
         </form>
