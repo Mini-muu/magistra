@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database.db import *
 from database.models import User
@@ -10,13 +10,18 @@ router = APIRouter()
 
 @router.get("/register")
 async def create_user(username:str, email:str, password:str, db: Session = Depends(get_db)):
-    redis_client = RedisClient()
-    password_hashed = hash_string(password)
-    user = User(username=username, email=email, password=password_hashed)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    user_id = user.id
-    session_id = generate_temp_id(username)
-    redis_client.set_value(user_id, session_id)
-    return session_id
+    try:
+        redis_client = RedisClient()
+        password_hashed = hash_string(password)
+        user = User(username=username, email=email, password=password_hashed)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        user_id = user.id
+        session_id = generate_temp_id(username)
+        redis_client.set_value(user_id, session_id)
+        return session_id
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print(f"An error occurred: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
