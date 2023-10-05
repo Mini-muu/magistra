@@ -6,14 +6,24 @@ services:
     container_name: database
     restart: always
     environment:
-      POTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: magistra
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./database/init:/docker-entrypoint-initdb.d
       - database-data:/var/lib/postgresql/data
     networks:
-      - backend-network
+      - backend_network
+    
+  cache:
+    image: redis:latest
+    container_name: cache
+    restart: always
+    volumes:
+      - cache-data:/data
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    networks:
+      - backend_network
   
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -22,14 +32,27 @@ services:
     depends_on:
       - database
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      - backend-network
+      - backend_network
     ports:
       - '8888:80'
+    
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    restart: always
+    depends_on:
+      - cache
+    volumes:
+      - redisinsight-data:/db
+    networks:
+      - backend_network
+    ports:
+      - "8001:8001"
     
   api:
     image: python:3.10
@@ -37,18 +60,23 @@ services:
     restart: always
     depends_on:
       - database
+      - cache
+    env_file:
+      - .env
     volumes:
       - ./api/app:/app/
-    command: bash -c "cd app && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 80"
+    command: bash -c "cd app && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
     networks:
-      - backend-network
-      - frontend-network
+      - backend_network
+      - frontend_network
     healthcheck:
       test: curl --fail http://api/test || exit 1 
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
+    ports:
+      - '63:8000' # remove in production
   
   frontend:
     image: node:20-alpine3.17
@@ -60,14 +88,22 @@ services:
       - ./frontend/app:/app/
     command: /bin/sh -c "cd app && npm install && npm run dev" # <-- only while in development
     networks:
-      - frontend-network
+      - frontend_network
     ports:
       - 7525:3000
+    healthcheck:
+      test: curl --fail http://frontend || exit 1 
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
 volumes:
   database-data:
+  cache-data:
   pgadmin-data:
+  redisinsight-data:
 
 networks:
-  backend-network:
-  frontend-network:
+  backend_network:
+  frontend_network:
