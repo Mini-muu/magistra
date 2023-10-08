@@ -25,7 +25,7 @@ Currently the service network is made up of three parts:
 
 ## Exposed Ports
 Ports exposed during development will be the following: (in production only next application will be exposed)
-| service      | port |
+| SERVICE      | PORT |
 | ------------ | ---- |
 | next         | 7525 |
 | api          | 63   |
