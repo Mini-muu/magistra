@@ -1,6 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from endpoints import test, register, login
-from database.db import engine, SessionLocal, get_db
 
 app = FastAPI()
 
