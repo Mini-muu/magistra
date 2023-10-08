@@ -10,7 +10,11 @@ router = APIRouter()
 
 @router.get("/register")
 async def create_user(username:str, email:str, password:str, db: Session = Depends(get_db)):
+    # check if user already exist
+    if db.query(User).filter(User.username == username).first() or db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="User already exists")
     try:
+        # hash the password and create the user
         redis_client = RedisClient()
         password_hashed = hash_string(password)
         user = User(username=username, email=email, password=password_hashed)
@@ -18,8 +22,9 @@ async def create_user(username:str, email:str, password:str, db: Session = Depen
         db.commit()
         db.refresh(user)
         user_id = user.id
+        # generate temp session id, save to cache and save it
         session_id = generate_temp_id(username)
-        redis_client.set_value(user_id, session_id)
+        redis_client.set_value(session_id, user_id)
         return session_id
     except Exception as e:
         # Log the exception for debugging purposes
