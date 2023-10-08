@@ -23,7 +23,7 @@ Currently the service network is made up of three parts:
 - Frontend private network that connects api and next
 - Public network that exposes the next application to connect to the website
 
-## Exposed Ports
+## Exposed Ports
 Ports exposed during development will be the following: (in production only next application will be exposed)
 | service      | port |
 | ------------ | ---- |
