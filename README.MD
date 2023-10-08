@@ -21,4 +21,13 @@ Currently the service supports automatic healthchecks for the following services
 Currently the service network is made up of three parts: 
 - Backend private network (not accessible from outside) that connects postgres, redis and api
 - Frontend private network that connects api and next
-- Frontend public network that exposes the next application to connect to the website (and temporarly also the api for a higher development speed)
+- Public network that exposes the next application to connect to the website
+
+## Exposed Ports
+Ports exposed during development will be the following: (in production only next application will be exposed)
+| service      | port |
+| ------------ | ---- |
+| next         | 7525 |
+| api          | 63   |
+| pgadmin      | 8888 |
+| redisinsight | 8001 |
