@@ -18,3 +18,9 @@ class RedisClient:
 
     def delete_key(self, key):
         return self.redis_client.delete(key)
+    
+    def get_expiration(self, key):
+        return self.redis_client.ttl(key)
+
+def get_redis_client():
+    return RedisClient()

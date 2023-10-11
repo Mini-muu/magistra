@@ -2,20 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database.db import *
 from database.models import User
-from cache.redis_client import RedisClient
+from cache.redis_client import RedisClient, get_redis_client
 from hashing.hash import hash_string
 from utils.generate_temp_id import generate_temp_id
 
 router = APIRouter()
 
 @router.get("/register")
-async def create_user(username:str, email:str, password:str, db: Session = Depends(get_db)):
+async def create_user(username:str, email:str, password:str, db: Session = Depends(get_db), redis_client: RedisClient = Depends(get_redis_client)):
     # check if user already exist
     if db.query(User).filter(User.username == username).first() or db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="User already exists")
     try:
         # hash the password and create the user
-        redis_client = RedisClient()
         password_hashed = hash_string(password)
         user = User(username=username, email=email, password=password_hashed)
         db.add(user)
