@@ -2,7 +2,7 @@ version: '3'
 
 services:
   database:
-    image: postgres:latest
+    image: postgres:16
     container_name: database
     restart: always
     environment:
@@ -16,7 +16,7 @@ services:
       - backend_network
     
   cache:
-    image: redis:latest
+    image: redis:7.2.1
     container_name: cache
     restart: always
     volumes:
